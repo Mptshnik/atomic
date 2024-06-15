@@ -2,7 +2,7 @@
 include .env
 export
 
-DOCKER_COMPOSE=docker compose -f ./docker/docker-compose.yml --project-directory=./docker
+DOCKER_COMPOSE=docker-compose -f ./docker/docker-compose.yml --project-directory=./docker
 DOCKER_EXEC=docker exec ${PROJECT_NAME}.php-fpm
 
 CURRENT_UID := $(shell id -u)
@@ -22,13 +22,6 @@ up:
 down:
 	$(DOCKER_COMPOSE) down
 
-.PHONY: restart
-restart: $(DOCKER_COMPOSE) down up
-
-.PHONY: ps
-ps:
-	$(DOCKER_COMPOSE) ps
-
 .PHONY: build
 build:
 	$(DOCKER_COMPOSE) build --force-rm
@@ -36,10 +29,6 @@ build:
 .PHONY: composer
 composer:
 	$(DOCKER_EXEC) composer install -n
-
-.PHONY: migrate
-migrate:
-	$(DOCKER_EXEC) php artisan migrate --force
 
 .PHONY: optimize
 optimize:
@@ -50,7 +39,3 @@ optimize:
 .PHONY: exec
 exec:
 	docker exec -it ${PROJECT_NAME}.php-fpm bash
-
-.PHONY: logs
-logs:
-	$(DOCKER_COMPOSE) logs
