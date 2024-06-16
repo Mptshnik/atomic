@@ -6,8 +6,12 @@ ARG WORKING_DIR
 
 # Установим системные зависимости
 RUN apt-get update && apt-get install -y \
-    apt-utils git zip vim libssl-dev curl g++ gcc make \
+    apt-utils git zip vim libssl-dev curl g++ gcc make ffmpeg libsm6 libxext6 \
     libzip-dev libfreetype6-dev libonig-dev libxml2-dev libmcrypt-dev
+
+RUN apt install python3 python3-pip -y
+
+RUN pip install ultralytics --break-system-packages
 
 # Установим зависимости для докера
 RUN docker-php-ext-install -j$(nproc) exif opcache mbstring intl pdo pdo_mysql sockets zip bcmath soap \

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Services\DefectDetectionService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
@@ -12,6 +13,10 @@ use Illuminate\Support\Facades\Storage;
  */
 class DefectDetectionController extends Controller
 {
+    public function __construct(private DefectDetectionService $service)
+    {
+    }
+
     /**
      * Загрузка изображения сварки
      *
@@ -20,15 +25,9 @@ class DefectDetectionController extends Controller
     public function uploadImage(Request $request): JsonResource
     {
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg|max:4048',
+            'file' => 'required|file|max:50000',
         ]);
 
-        $image = $request->file('image');
-
-        $image->storeAs('images', $image->hashName());
-
-        return new JsonResource([
-            'image' => Storage::disk('public')->url('images/' . $image->hashName()),
-        ]);
+        return new JsonResource($this->service->processImage($request));
     }
 }

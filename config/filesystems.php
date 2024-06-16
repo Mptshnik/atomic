@@ -44,6 +44,14 @@ return [
             'throw' => false,
         ],
 
+        'python' => [
+            'driver' => 'local',
+            'root' => base_path('python/sources'),
+            'url' => env('APP_URL').'/sources',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
@@ -71,6 +79,7 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
+        public_path('sources') => base_path('python/sources'),
     ],
 
 ];
