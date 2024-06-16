@@ -19,11 +19,14 @@ class DefectDetectionService
 
         $filePath = $file->storeAs('files', $file->hashName());
 
-        $process = new Process([
-            'python3',
-            $pythonScriptPath,
-            storage_path('app/public/' . $filePath),
-        ]);
+        $local = config('app.env') === 'local';
+
+        $command = $local ? ['python3',] : ['sudo', '-u', 'www-data', 'python3',];
+
+        $command[] = $pythonScriptPath;
+        $command[] = storage_path('app/public/' . $filePath);
+
+        $process = new Process($command);
 
         $process->run();
 
@@ -31,9 +34,10 @@ class DefectDetectionService
             throw new ProcessFailedException($process);
         }
 
-        $output = explode("\n", $process->getOutput());
+        preg_match('/\{.*\}/', $process->getOutput(), $matches);
+        $jsonString = $matches[0];
 
-        $result = isset($output[1]) ? json_decode($output[1], true) : null;
+        $result = json_decode($jsonString, true) ;
 
         if (! $result) {
             return null;
